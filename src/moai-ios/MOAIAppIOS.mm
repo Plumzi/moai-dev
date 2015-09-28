@@ -10,7 +10,9 @@
 #import <moai-apple/NSString+MOAILib.h>
 
 #import <moai-ios/MOAIAppIOS.h>
+#if !TARGET_OS_TV
 #import <moai-ios/MOAITakeCameraListener.h>
+#endif
 
 #import <ifaddrs.h>
 #import <arpa/inet.h>
@@ -111,12 +113,13 @@ int MOAIAppIOS::_getDirectoryInDomain ( lua_State* L ) {
  @out	number Interface orientation
  */
 int MOAIAppIOS::_getInterfaceOrientation ( lua_State* L ) {
-	
+	// TODO: Disable getInterfaceOrientation or return fixed value for OS_TV
 	MOAILuaState state ( L );
 
+#if !TARGET_OS_TV // -> TARGET_OS_IPHONE
 	UIInterfaceOrientation orientation = [ UIApplication sharedApplication ].statusBarOrientation;
-
 	lua_pushnumber ( state, orientation );
+#endif
 
 	return 1;
 }
@@ -297,7 +300,8 @@ int MOAIAppIOS::_sendMail ( lua_State* L ) {
 	@in int			if device is an ipad height coordinate of Popover
  */
 int MOAIAppIOS::_takeCamera( lua_State* L ) {
-	
+	// TODO Disable _takeCamera on OS_TV
+#if !TARGET_OS_TV
 	int x, y, width, height = 0;
 	NSUInteger sourceType;
 	
@@ -332,7 +336,7 @@ int MOAIAppIOS::_takeCamera( lua_State* L ) {
 	} else {
 		[rootVC presentViewController:ipc animated:YES completion:nil];
 	}
-	
+#endif
 	return 0;
 }
 
@@ -352,11 +356,12 @@ void MOAIAppIOS::callTakeCameraLuaCallback (NSString *imagePath) {
 // Before iOS 8.0, only the portrait "bounds" where returned.
 // The function below ensure Portrait bounds are returned.
 CGRect MOAIAppIOS::GetScreenBoundsFromCurrentOrientation ( const CGRect& bounds ) {
-
+#if !TARGET_OS_TV
 	bool lessThaniOS8 = MOAIAppIOS::IsSystemVersionLessThan ( @"8.0" );
 	if ( lessThaniOS8 || UIInterfaceOrientationIsPortrait ([ UIApplication sharedApplication ].statusBarOrientation )) {
 		return bounds;
 	}
+#endif
 	return CGRectMake ( bounds.origin.y, bounds.origin.x, bounds.size.height, bounds.size.width );
 }
 
@@ -370,9 +375,10 @@ BOOL MOAIAppIOS::IsSystemVersionLessThan ( NSString* version ) {
 MOAIAppIOS::MOAIAppIOS () {
 
 	RTTI_SINGLE ( MOAIGlobalEventSource )
-
+#if !TARGET_OS_TV
 	//this->mMailDelegate = [ MoaiMailComposeDelegate alloc ];
 	this->mTakeCameraListener = [ MOAITakeCameraListener alloc ];
+#endif
 	
 	this->RegisterNotificationListeners ();
 }
@@ -415,11 +421,12 @@ void MOAIAppIOS::RegisterLuaClass ( MOAILuaState& state ) {
 	state.SetField ( -1, "DOMAIN_DOCUMENTS",			( u32 )DOMAIN_DOCUMENTS );
 	state.SetField ( -1, "DOMAIN_APP_SUPPORT",			( u32 )DOMAIN_APP_SUPPORT );
 	state.SetField ( -1, "DOMAIN_CACHES",				( u32 )DOMAIN_CACHES );
-	
+#if !TARGET_OS_TV
 	state.SetField ( -1, "INTERFACE_ORIENTATION_PORTRAIT",				( u32 )INTERFACE_ORIENTATION_PORTRAIT );
 	state.SetField ( -1, "INTERFACE_ORIENTATION_PORTRAIT_UPSIDE_DOWN",	( u32 )INTERFACE_ORIENTATION_PORTRAIT_UPSIDE_DOWN );
 	state.SetField ( -1, "INTERFACE_ORIENTATION_LANDSCAPE_LEFT",		( u32 )INTERFACE_ORIENTATION_LANDSCAPE_LEFT );
 	state.SetField ( -1, "INTERFACE_ORIENTATION_LANDSCAPE_RIGHT",		( u32 )INTERFACE_ORIENTATION_LANDSCAPE_RIGHT );
+#endif
 
 	luaL_Reg regTable [] = {
 		{ "canOpenURL",					_canOpenURL },

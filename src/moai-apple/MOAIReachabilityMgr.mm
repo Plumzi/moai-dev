@@ -16,7 +16,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
-#ifdef MOAI_OS_IPHONE
+#if defined(MOAI_OS_IPHONE) && !defined(MOAI_OS_TV)
 	#import<CoreTelephony/CTCallCenter.h>
 	#import<CoreTelephony/CTCall.h>   
 	#import<CoreTelephony/CTCarrier.h>    
@@ -117,7 +117,7 @@
 	NetworkStatus status = [[ MOAIReachability reachabilityForInternetConnection ] currentReachabilityStatus ];
 	environment.SetValue ( MOAI_ENV_connectionType, ( int )status );
 	
-	#ifdef MOAI_OS_IPHONE
+	#if defined(MOAI_OS_IPHONE) && !defined(MOAI_OS_TV)
 		// If we have a cellualr connection, get carrier information
 		if ( status == ReachableViaWWAN ) {
 		

@@ -5,8 +5,10 @@
 #define	MOAIAPPIOS_H
 
 #import <Foundation/Foundation.h>
-#import <MessageUI/MFMailComposeViewController.h>
 #import <UIKit/UIKit.h>
+#if !TARGET_OS_TV
+#import <MessageUI/MFMailComposeViewController.h>
+#endif
 
 #import <moai-core/host.h>
 #import <moai-core/headers.h>
@@ -88,12 +90,14 @@ public:
 		DOMAIN_CACHES      = NSCachesDirectory,
 	};
 
+#if !TARGET_OS_TV
 	enum {
 		INTERFACE_ORIENTATION_PORTRAIT					= UIInterfaceOrientationPortrait,
 		INTERFACE_ORIENTATION_PORTRAIT_UPSIDE_DOWN		= UIInterfaceOrientationPortraitUpsideDown,
 		INTERFACE_ORIENTATION_LANDSCAPE_LEFT			= UIInterfaceOrientationLandscapeLeft,
 		INTERFACE_ORIENTATION_LANDSCAPE_RIGHT			= UIInterfaceOrientationLandscapeRight,
 	};
+#endif
 
 	//----------------------------------------------------------------//
 	static CGRect		GetScreenBoundsFromCurrentOrientation	( const CGRect& bounds ); // TODO: move to MOAIWebView or MOAIAppDelegate when those are added later

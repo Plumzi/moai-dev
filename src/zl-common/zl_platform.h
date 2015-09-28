@@ -7,8 +7,10 @@
 	#include "TargetConditionals.h"
 
 	#if TARGET_OS_IPHONE
-
 		#define MOAI_OS_IPHONE
+		#if TARGET_OS_TV
+			#define MOAI_OS_TV
+		#endif
 
 //		#if TARGET_IPHONE_SIMULATOR
 //			#define MOAI_OS_IPHONE_SIMULATOR
@@ -16,7 +18,7 @@
 //			#define MOAI_OS_IPHONE_DEVICE
 //		#endif
 
-	#else
+	#elif TARGET_OS_MAC
 		#define MOAI_OS_OSX
 	#endif
 

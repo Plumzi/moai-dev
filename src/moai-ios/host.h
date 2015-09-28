@@ -19,7 +19,9 @@ AKU_API void	AKUIosAppFinalize									();
 AKU_API void	AKUIosAppInitialize									();
 AKU_API void	AKUIosContextInitialize								();
 
+#if !TARGET_OS_TV
 AKU_API void	AKUIosNotifyLocalNotificationReceived				( UILocalNotification* notification );
+#endif
 AKU_API void	AKUIosNotifyRemoteNotificationReceived				( NSDictionary* notification );
 AKU_API void	AKUIosNotifyRemoteNotificationRegistrationComplete	( NSData* deviceToken, NSError* error );
 AKU_API void	AKUIosOpenUrl										( NSURL* url, NSString* sourceApplication );

@@ -213,7 +213,8 @@ static int const kOpenUDIDRedundancySlots = 100;
     NSMutableDictionary* frequencyDict = [NSMutableDictionary dictionaryWithCapacity:kOpenUDIDRedundancySlots];
     for (int n=0; n<kOpenUDIDRedundancySlots; n++) {
         NSString* slotPBid = [NSString stringWithFormat:@"%@%d",kOpenUDIDSlotPBPrefix,n];
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_TV
+#if TARGET_OS_IPHONE
         UIPasteboard* slotPB = [UIPasteboard pasteboardWithName:slotPBid create:NO];
 #else
         NSPasteboard* slotPB = [NSPasteboard pasteboardWithName:slotPBid];
@@ -242,6 +243,7 @@ static int const kOpenUDIDRedundancySlots = 100;
                 optedOut = optedOutDate!=nil;
             }
         }
+#endif
     }
     
     // sort the Frequency dict with highest occurence count of the same OpenUDID (redundancy, failsafe)
@@ -286,7 +288,8 @@ static int const kOpenUDIDRedundancySlots = 100;
     //
     OpenUDIDLog(@"Available Slot %@ Existing Slot %@",availableSlotPBid,myRedundancySlotPBid);
     if (availableSlotPBid!=nil && (myRedundancySlotPBid==nil || [availableSlotPBid isEqualToString:myRedundancySlotPBid])) {
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_TV
+#if TARGET_OS_IPHONE// || TARGET_IPHONE_SIMULATOR
         UIPasteboard* slotPB = [UIPasteboard pasteboardWithName:availableSlotPBid create:YES];
         [slotPB setPersistent:YES];
 #else
@@ -304,6 +307,7 @@ static int const kOpenUDIDRedundancySlots = 100;
         //
         if (openUDID && localDict)
             [MOAIOpenUDID _setDict:localDict forPasteboard:slotPB];
+#endif
     }
 
     // Save the dictionary locally if applicable

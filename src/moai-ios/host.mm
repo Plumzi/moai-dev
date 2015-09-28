@@ -31,10 +31,10 @@ void AKUIosContextInitialize () {
 	
 	// MOAI
 	REGISTER_LUA_CLASS ( MOAIAppIOS )
-	REGISTER_LUA_CLASS ( MOAIDialogIOS )
-	REGISTER_LUA_CLASS ( MOAIKeyboardIOS )
-	REGISTER_LUA_CLASS ( MOAINotificationsIOS )
-	REGISTER_LUA_CLASS ( MOAIWebViewIOS )
+//	REGISTER_LUA_CLASS ( MOAIDialogIOS )
+//	REGISTER_LUA_CLASS ( MOAIKeyboardIOS )
+//	REGISTER_LUA_CLASS ( MOAINotificationsIOS )
+//	REGISTER_LUA_CLASS ( MOAIWebViewIOS )
 
 	// Device properties
 	MOAIEnvironment& environment = MOAIEnvironment::Get ();
@@ -83,6 +83,7 @@ void AKUIosContextInitialize () {
     environment.SetValue ( MOAI_ENV_devPlatform, devPlatform );
 }
 
+#if !TARGET_OS_TV
 //----------------------------------------------------------------//
 void AKUIosNotifyLocalNotificationReceived ( UILocalNotification* notification ) {
 
@@ -100,7 +101,7 @@ void AKUIosNotifyRemoteNotificationRegistrationComplete ( NSData* deviceToken, N
 
 	MOAINotificationsIOS::Get ().NotifyRemoteRegistrationComplete ( deviceToken, error );
 }
-
+#endif
 //----------------------------------------------------------------//
 void AKUIosOpenUrl ( NSURL* url, NSString* sourceApplication ) {
 
