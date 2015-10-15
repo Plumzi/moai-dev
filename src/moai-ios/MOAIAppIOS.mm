@@ -36,9 +36,9 @@ int MOAIAppIOS::_canOpenURL ( lua_State* L ) {
 
 	if ( url && url [ 0 ] != '\0' ) {
 		NSString *requestString = [NSString stringWithCString:url encoding:NSUTF8StringEncoding];
-		NSURL * myURL = [[NSURL alloc] initWithString:[requestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-		lua_pushboolean (state, [[ UIApplication sharedApplication ]
-								 canOpenURL:myURL]);
+		requestString = [requestString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+		NSURL * myURL = [[NSURL alloc] initWithString:requestString];
+		lua_pushboolean (state, [[UIApplication sharedApplication] canOpenURL:myURL]);
 		[myURL release];
 		return 1;
 	}
@@ -205,9 +205,9 @@ int MOAIAppIOS::_openURL ( lua_State* L ) {
 	
 	if ( url && url [ 0 ] != '\0' ) {
 		NSString *requestString = [NSString stringWithCString:url encoding:NSUTF8StringEncoding];
-		NSURL * myURL = [[NSURL alloc] initWithString:[requestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+		requestString = [requestString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+		NSURL * myURL = [[NSURL alloc] initWithString:requestString];
 		[[ UIApplication sharedApplication ] openURL:myURL];
-		
 		[myURL release];
 	}
 	
@@ -239,14 +239,14 @@ int MOAIAppIOS::_openURLWithParams ( lua_State* L ) {
 	NSMutableArray* paramPairs = [ NSMutableArray array ];
 	for ( NSString* key in [ params keyEnumerator ] ) {
 		
-		NSString* escapedValue = ( NSString* )CFURLCreateStringByAddingPercentEscapes( NULL, ( CFStringRef )[ params objectForKey: key ], NULL, ( CFStringRef )@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8 );
-		[ paramPairs addObject:[ NSString stringWithFormat: @"%@=%@", key, escapedValue ]];
-		[ escapedValue release ];
+		NSString *value = [ params objectForKey: key ];
+		[ paramPairs addObject:[ NSString stringWithFormat: @"%@=%@", key, value ]];
 	}
-	
+
 	NSString* urlQuery = [ paramPairs componentsJoinedByString: @"&" ];
-		
-	[[ UIApplication sharedApplication ] openURL:[ NSURL URLWithString:[ NSString stringWithFormat: @"%@%@%@", baseURL, urlQueryPrefix, urlQuery ]]];	
+	NSString *URLString = [ NSString stringWithFormat: @"%@%@%@", baseURL, urlQueryPrefix, urlQuery ];
+	URLString = [ URLString stringByAddingPercentEncodingWithAllowedCharacters:[ NSCharacterSet URLQueryAllowedCharacterSet ] ];
+	[[ UIApplication sharedApplication ] openURL:[ NSURL URLWithString: URLString ]];
 
 	return 0;
 }
@@ -299,9 +299,9 @@ int MOAIAppIOS::_sendMail ( lua_State* L ) {
 	@in int			if device is an ipad width coordinate of Popover
 	@in int			if device is an ipad height coordinate of Popover
  */
-int MOAIAppIOS::_takeCamera( lua_State* L ) {
-	// TODO Disable _takeCamera on OS_TV
 #if !TARGET_OS_TV
+int MOAIAppIOS::_takeCamera( lua_State* L ) {
+
 	int x, y, width, height = 0;
 	NSUInteger sourceType;
 	
@@ -325,10 +325,9 @@ int MOAIAppIOS::_takeCamera( lua_State* L ) {
 	ipc.sourceType = sourceType;
 	
 	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-		MOAIAppIOS::Get().mImagePickerPopover = [[UIPopoverController alloc] 
-												   initWithContentViewController: ipc];
-		[MOAIAppIOS::Get ().mTakeCameraListener setPopover:MOAIAppIOS::Get().mImagePickerPopover];
-		MOAIAppIOS::Get().mImagePickerPopover.delegate = MOAIAppIOS::Get ().mTakeCameraListener;
+		MOAIAppIOS::Get().mImagePickerPopover = [[UIPopoverController alloc] initWithContentViewController:ipc];
+		[MOAIAppIOS::Get().mTakeCameraListener setPopover:MOAIAppIOS::Get().mImagePickerPopover];
+		MOAIAppIOS::Get().mImagePickerPopover.delegate = MOAIAppIOS::Get().mTakeCameraListener;
 		CGRect rect = CGRectMake(x,y,10,10);
 		[MOAIAppIOS::Get().mImagePickerPopover presentPopoverFromRect:rect inView:[rootVC view] 
 						  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
@@ -336,7 +335,6 @@ int MOAIAppIOS::_takeCamera( lua_State* L ) {
 	} else {
 		[rootVC presentViewController:ipc animated:YES completion:nil];
 	}
-#endif
 	return 0;
 }
 
@@ -346,6 +344,7 @@ void MOAIAppIOS::callTakeCameraLuaCallback (NSString *imagePath) {
 	state.Push ([imagePath UTF8String]);
 	state.DebugCall ( 1, 0 );
 }
+#endif
 
 //================================================================//
 // MOAIAppIOS
@@ -389,7 +388,9 @@ MOAIAppIOS::~MOAIAppIOS () {
 	RemoveNotificationListeners ();
 
 	//[ this->mMailDelegate release ];
+#if !TARGET_OS_TV
 	[ this->mTakeCameraListener release];
+#endif
 }
 
 //----------------------------------------------------------------//
@@ -440,7 +441,9 @@ void MOAIAppIOS::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "openURLWithParams",			_openURLWithParams },
 		{ "sendMail",					_sendMail },
 		{ "setListener",				&MOAIGlobalEventSource::_setListener < MOAIAppIOS > },
+#if !TARGET_OS_TV
 		{ "takeCamera",					_takeCamera },
+#endif
 		{ NULL, NULL }
 	};
 

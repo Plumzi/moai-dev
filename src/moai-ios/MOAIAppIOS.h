@@ -48,10 +48,11 @@ private:
 	typedef STLList < id >::iterator NotificationObserverIt;
 	STLList < id >	mNotificationObservers;
 
+#if !TARGET_OS_TV
 	MOAILuaStrongRef			mOnTakeCameraCallback;
 	MOAITakeCameraListener*		mTakeCameraListener;
-	//MoaiMailComposeDelegate*	mMailDelegate;
 	UIPopoverController*		mImagePickerPopover;
+#endif
 	
 	//----------------------------------------------------------------//
 	static int		_canOpenURL						( lua_State* L );
@@ -63,7 +64,9 @@ private:
 	static int		_openURL						( lua_State* L );
 	static int		_openURLWithParams				( lua_State* L );
 	static int		_sendMail						( lua_State* L );
+#if !TARGET_OS_TV
 	static int		_takeCamera						( lua_State* L );
+#endif
 	
 	//----------------------------------------------------------------//
 	void			RegisterNotificationListeners	();
@@ -108,7 +111,9 @@ public:
 	void				OpenUrl									( NSURL* url, NSString* sourceApplication );
 	void				RegisterLuaClass						( MOAILuaState& state );
 
+#if !TARGET_OS_TV
 	static void			callTakeCameraLuaCallback				( NSString* imagePath );
+#endif
 };
 
 //================================================================//
