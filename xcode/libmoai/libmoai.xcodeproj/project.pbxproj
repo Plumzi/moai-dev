@@ -2230,6 +2230,9 @@
 		667395021BB92B9800D968D6 /* MOAIAppIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD2B7C3217FA56A100EBA2DB /* MOAIAppIOS.mm */; };
 		667395031BB937EA00D968D6 /* host.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD2B7C9217FA573B00EBA2DB /* host.mm */; };
 		667395041BB937F100D968D6 /* host.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2B7C9317FA573B00EBA2DB /* host.h */; };
+		66D543CD1BD652F400256DE4 /* MOAIDialogIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2B7C3717FA56A100EBA2DB /* MOAIDialogIOS.h */; };
+		66D543CE1BD652F800256DE4 /* MOAIDialogIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD2B7C3817FA56A100EBA2DB /* MOAIDialogIOS.mm */; };
+		66D543CF1BD652FF00256DE4 /* MOAIAppIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2B7C3117FA56A100EBA2DB /* MOAIAppIOS.h */; };
 		66E345461614CA710021FC4B /* moai_whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = 66E345451614CA710021FC4B /* moai_whirlpool.c */; };
 		66E345471614CA710021FC4B /* moai_whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = 66E345451614CA710021FC4B /* moai_whirlpool.c */; };
 		89BE694A173974FD00DFE837 /* zl_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 89BE6888173974FC00DFE837 /* zl_platform.h */; };
@@ -12127,8 +12130,8 @@
 			isa = PBXGroup;
 			children = (
 				CD2B7C9117FA573B00EBA2DB /* headers.h */,
-				CD2B7C9217FA573B00EBA2DB /* host.mm */,
 				CD2B7C9317FA573B00EBA2DB /* host.h */,
+				CD2B7C9217FA573B00EBA2DB /* host.mm */,
 				CD2B7C3117FA56A100EBA2DB /* MOAIAppIOS.h */,
 				CD2B7C3217FA56A100EBA2DB /* MOAIAppIOS.mm */,
 				CD2B7C3717FA56A100EBA2DB /* MOAIDialogIOS.h */,
@@ -15389,6 +15392,7 @@
 				664007DB1BB7F575006ACE9D /* MOAIDataBuffer.h in Headers */,
 				664007DC1BB7F575006ACE9D /* MOAIDataBufferStream.h in Headers */,
 				664007DD1BB7F575006ACE9D /* MOAIDataIOTask.h in Headers */,
+				66D543CD1BD652F400256DE4 /* MOAIDialogIOS.h in Headers */,
 				664007DF1BB7F575006ACE9D /* MOAIFileStream.h in Headers */,
 				664007E01BB7F575006ACE9D /* MOAIFileSystem.h in Headers */,
 				664007E11BB7F575006ACE9D /* MOAIHashWriter.h in Headers */,
@@ -15422,6 +15426,7 @@
 				664008001BB7F575006ACE9D /* MOAIStreamAdapter.h in Headers */,
 				664008011BB7F575006ACE9D /* MOAILuaRefTable.h in Headers */,
 				664008021BB7F575006ACE9D /* MOAILuaClass-impl.h in Headers */,
+				66D543CF1BD652FF00256DE4 /* MOAIAppIOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -19786,6 +19791,7 @@
 				6640080D1BB7F575006ACE9D /* MOAIGlobals.cpp in Sources */,
 				6640080E1BB7F575006ACE9D /* MOAILogMessages.cpp in Sources */,
 				6640080F1BB7F575006ACE9D /* MOAIKeyCode.cpp in Sources */,
+				66D543CE1BD652F800256DE4 /* MOAIDialogIOS.mm in Sources */,
 				664008101BB7F575006ACE9D /* MOAILogMgr.cpp in Sources */,
 				664008111BB7F575006ACE9D /* MOAITestMgr.cpp in Sources */,
 				664008121BB7F575006ACE9D /* MOAILuaObject.cpp in Sources */,

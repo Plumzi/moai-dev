@@ -7,8 +7,8 @@
 #import <moai-apple/headers.h>
 
 #import <moai-ios/MOAIAppIOS.h>
-#if defined(MOAI_OS_IPHONE) && !defined(MOAI_OS_TV)
 #import <moai-ios/MOAIDialogIOS.h>
+#if defined(MOAI_OS_IPHONE) && !defined(MOAI_OS_TV)
 #import <moai-ios/MOAIKeyboardIOS.h>
 #import <moai-ios/MOAINotificationsIOS.h>
 #import <moai-ios/MOAIWebViewController.h>
