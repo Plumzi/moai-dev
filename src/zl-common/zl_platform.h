@@ -8,14 +8,20 @@
 
 	#if TARGET_OS_IPHONE
 
+		// TARGET_OS_IPHONE = TARGET_OS_TV || TARGET_OS_IOS
 		#define MOAI_OS_IPHONE
+
+		#if TARGET_OS_TV
+			#define MOAI_OS_TVOS
+		#else // TARGET_OS_IOS
+			#define MOAI_OS_IOS
+		#endif
 
 //		#if TARGET_IPHONE_SIMULATOR
 //			#define MOAI_OS_IPHONE_SIMULATOR
 //		#else
 //			#define MOAI_OS_IPHONE_DEVICE
 //		#endif
-
 	#else
 		#define MOAI_OS_OSX
 	#endif

@@ -5,14 +5,17 @@
 #define	MOAIAPPIOS_H
 
 #import <Foundation/Foundation.h>
-#import <MessageUI/MFMailComposeViewController.h>
 #import <UIKit/UIKit.h>
 
 #import <moai-core/host.h>
 #import <moai-core/headers.h>
 
+#if !TARGET_OS_TV
+#import <MessageUI/MFMailComposeViewController.h>
+
 @class MOAIMailComposeDelegate;
 @class MOAITakeCameraListener;
+#endif
 
 //================================================================//
 // MOAIAppIOS
@@ -45,10 +48,13 @@ private:
 	typedef STLList < id >::iterator NotificationObserverIt;
 	STLList < id >	mNotificationObservers;
 
+#if !TARGET_OS_TV
 	MOAILuaStrongRef			mOnTakeCameraCallback;
+
 	MOAITakeCameraListener*		mTakeCameraListener;
 	//MOAIMailComposeDelegate*	mMailDelegate;
 	UIPopoverController*		mImagePickerPopover;
+#endif
 	
 	//----------------------------------------------------------------//
 	static int		_canOpenURL						( lua_State* L );
@@ -61,8 +67,10 @@ private:
 	static int		_getUTCTime						( lua_State* L );
 	static int		_openURL						( lua_State* L );
 	static int		_openURLWithParams				( lua_State* L );
+#if !TARGET_OS_TV
 	static int		_sendMail						( lua_State* L );
 	static int		_takeCamera						( lua_State* L );
+#endif
 	static int		_vibrate						( lua_State* L );
 	
 	//----------------------------------------------------------------//
@@ -90,12 +98,14 @@ public:
 		DOMAIN_CACHES      = NSCachesDirectory,
 	};
 
+#if !TARGET_OS_TV
 	enum {
 		INTERFACE_ORIENTATION_PORTRAIT					= UIInterfaceOrientationPortrait,
 		INTERFACE_ORIENTATION_PORTRAIT_UPSIDE_DOWN		= UIInterfaceOrientationPortraitUpsideDown,
 		INTERFACE_ORIENTATION_LANDSCAPE_LEFT			= UIInterfaceOrientationLandscapeLeft,
 		INTERFACE_ORIENTATION_LANDSCAPE_RIGHT			= UIInterfaceOrientationLandscapeRight,
 	};
+#endif
 
 	//----------------------------------------------------------------//
 	static CGRect		GetScreenBoundsFromCurrentOrientation	( const CGRect& bounds ); // TODO: move to MOAIWebView or MOAIAppDelegate when those are added later
@@ -106,7 +116,9 @@ public:
 	void				OpenUrl									( NSURL* url, NSString* sourceApplication );
 	void				RegisterLuaClass						( MOAILuaState& state );
 
+#if !TARGET_OS_TV
 	static void			callTakeCameraLuaCallback				( NSString* imagePath );
+#endif
 };
 
 //================================================================//

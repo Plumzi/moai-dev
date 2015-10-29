@@ -44,16 +44,4 @@ public:
 	void	RegisterLuaClass	( MOAILuaState& state );
 };
 
-@interface LuaAlertView : UIAlertView < UIAlertViewDelegate > {
-@public
-	int						positiveButtonIndex;
-	int						neutralButtonIndex;
-	int						negativeButtonIndex;
-	MOAILuaStrongRef		callback;
-};
-
-- ( id ) initWithTitle:( NSString * )title message:( NSString * )message cancelButtonTitle:( NSString * )cancelButtonTitle;
-
-@end
-
 #endif

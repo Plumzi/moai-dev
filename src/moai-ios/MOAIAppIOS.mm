@@ -12,7 +12,9 @@
 #import <moai-apple/NSString+MOAILib.h>
 
 #import <moai-ios/MOAIAppIOS.h>
+#if !TARGET_OS_TV
 #import <moai-ios/MOAITakeCameraListener.h>
+#endif
 
 #import <ifaddrs.h>
 #import <arpa/inet.h>
@@ -36,10 +38,13 @@ int MOAIAppIOS::_canOpenURL ( lua_State* L ) {
 	cc8* url = state.GetValue < cc8* >( 1, "" );
 
 	if ( url && url [ 0 ] != '\0' ) {
-		NSString *requestString = [NSString stringWithCString:url encoding:NSUTF8StringEncoding];
-		NSURL * myURL = [[NSURL alloc] initWithString:[requestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-		lua_pushboolean (state, [[ UIApplication sharedApplication ]
-								 canOpenURL:myURL]);
+		NSString *URLString = [NSString stringWithCString:url encoding:NSUTF8StringEncoding];
+		NSCharacterSet *URLQueryCharacterSet = [NSCharacterSet URLQueryAllowedCharacterSet];
+		URLString = [URLString stringByAddingPercentEncodingWithAllowedCharacters:URLQueryCharacterSet];
+		NSURL * myURL = [[NSURL alloc] initWithString:URLString];
+
+		lua_pushboolean ( state, [[UIApplication sharedApplication] canOpenURL:myURL] );
+
 		[myURL release];
 		return 1;
 	}
@@ -113,6 +118,7 @@ int MOAIAppIOS::_getDirectoryInDomain ( lua_State* L ) {
  @in	nil
  @out	number Interface orientation
  */
+#if !TARGET_OS_TV
 int MOAIAppIOS::_getInterfaceOrientation ( lua_State* L ) {
 	
 	MOAILuaState state ( L );
@@ -123,6 +129,7 @@ int MOAIAppIOS::_getInterfaceOrientation ( lua_State* L ) {
 
 	return 1;
 }
+#endif
 
 //----------------------------------------------------------------//
 /**	@lua	getIPAddress
@@ -278,10 +285,13 @@ int MOAIAppIOS::_openURL ( lua_State* L ) {
 	cc8* url = state.GetValue < cc8* >( 1, "" );
 	
 	if ( url && url [ 0 ] != '\0' ) {
-		NSString *requestString = [NSString stringWithCString:url encoding:NSUTF8StringEncoding];
-		NSURL * myURL = [[NSURL alloc] initWithString:[requestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-		[[ UIApplication sharedApplication ] openURL:myURL];
-		
+		NSString *URLString = [NSString stringWithCString:url encoding:NSUTF8StringEncoding];
+		NSCharacterSet *URLQueryCharacterSet = [NSCharacterSet URLQueryAllowedCharacterSet];
+		URLString = [URLString stringByAddingPercentEncodingWithAllowedCharacters:URLQueryCharacterSet];
+		NSURL * myURL = [[NSURL alloc] initWithString:URLString];
+
+		[[UIApplication sharedApplication] openURL:myURL];
+
 		[myURL release];
 	}
 	
@@ -312,18 +322,23 @@ int MOAIAppIOS::_openURLWithParams ( lua_State* L ) {
 	
 	NSMutableArray* paramPairs = [ NSMutableArray array ];
 	for ( NSString* key in [ params keyEnumerator ] ) {
-		
-		NSString* escapedValue = ( NSString* )CFURLCreateStringByAddingPercentEscapes( NULL, ( CFStringRef )[ params objectForKey: key ], NULL, ( CFStringRef )@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8 );
-		[ paramPairs addObject:[ NSString stringWithFormat: @"%@=%@", key, escapedValue ]];
-		[ escapedValue release ];
+		NSString *value = [params objectForKey:key];
+		[paramPairs addObject:[NSString stringWithFormat:@"%@=%@", key, value]];
 	}
 	
-	NSString* urlQuery = [ paramPairs componentsJoinedByString: @"&" ];
-		
-	[[ UIApplication sharedApplication ] openURL:[ NSURL URLWithString:[ NSString stringWithFormat: @"%@%@%@", baseURL, urlQueryPrefix, urlQuery ]]];	
+	NSString* urlQuery = [paramPairs componentsJoinedByString:@"&"];
 
+	NSString *URLString = [NSString stringWithFormat: @"%@%@%@", baseURL, urlQueryPrefix, urlQuery];
+	NSCharacterSet *URLQueryCharacterSet = [NSCharacterSet URLQueryAllowedCharacterSet];
+	URLString = [URLString stringByAddingPercentEncodingWithAllowedCharacters:URLQueryCharacterSet];
+	NSURL *myURL = [NSURL URLWithString:URLString];
+
+	[[UIApplication sharedApplication] openURL:myURL];
+	
 	return 0;
 }
+
+#if !TARGET_OS_TV
 
 //----------------------------------------------------------------//
 /**	@lua	sendMail
@@ -413,6 +428,8 @@ int MOAIAppIOS::_takeCamera( lua_State* L ) {
 	return 0;
 }
 
+#endif
+
 //----------------------------------------------------------------//
 /**	@lua	vibrate
 	@text	Make the phone vibrate. Does nothing if vibration is unsupported by device.
@@ -428,6 +445,7 @@ int MOAIAppIOS::_vibrate ( lua_State *L ) {
 	return 0;
 }
 
+#if !TARGET_OS_TV
 
 void MOAIAppIOS::callTakeCameraLuaCallback (NSString *imagePath) {
 	MOAILuaRef& callback = MOAIAppIOS::Get ().mOnTakeCameraCallback;
@@ -435,6 +453,8 @@ void MOAIAppIOS::callTakeCameraLuaCallback (NSString *imagePath) {
 	state.Push ([imagePath UTF8String]);
 	state.DebugCall ( 1, 0 );
 }
+
+#endif
 
 //================================================================//
 // MOAIAppIOS
@@ -445,12 +465,15 @@ void MOAIAppIOS::callTakeCameraLuaCallback (NSString *imagePath) {
 // Before iOS 8.0, only the portrait "bounds" where returned.
 // The function below ensure Portrait bounds are returned.
 CGRect MOAIAppIOS::GetScreenBoundsFromCurrentOrientation ( const CGRect& bounds ) {
-
+#if TARGET_OS_TV
+	return bounds;
+#else
 	bool lessThaniOS8 = MOAIAppIOS::IsSystemVersionLessThan ( @"8.0" );
 	if ( lessThaniOS8 || UIInterfaceOrientationIsPortrait ([ UIApplication sharedApplication ].statusBarOrientation )) {
 		return bounds;
 	}
 	return CGRectMake ( bounds.origin.y, bounds.origin.x, bounds.size.height, bounds.size.width );
+#endif
 }
 
 //----------------------------------------------------------------//
@@ -464,8 +487,10 @@ MOAIAppIOS::MOAIAppIOS () {
 
 	RTTI_SINGLE ( MOAIGlobalEventSource )
 
+#if !TARGET_OS_TV
 	//this->mMailDelegate = [ MOAIMailComposeDelegate alloc ];
 	this->mTakeCameraListener = [ MOAITakeCameraListener alloc ];
+#endif
 	
 	this->RegisterNotificationListeners ();
 }
@@ -475,8 +500,10 @@ MOAIAppIOS::~MOAIAppIOS () {
 
 	RemoveNotificationListeners ();
 
+#if !TARGET_OS_TV
 	//[ this->mMailDelegate release ];
 	[ this->mTakeCameraListener release];
+#endif
 }
 
 //----------------------------------------------------------------//
@@ -508,17 +535,18 @@ void MOAIAppIOS::RegisterLuaClass ( MOAILuaState& state ) {
 	state.SetField ( -1, "DOMAIN_DOCUMENTS",			( u32 )DOMAIN_DOCUMENTS );
 	state.SetField ( -1, "DOMAIN_APP_SUPPORT",			( u32 )DOMAIN_APP_SUPPORT );
 	state.SetField ( -1, "DOMAIN_CACHES",				( u32 )DOMAIN_CACHES );
-	
+
+#if !TARGET_OS_TV
 	state.SetField ( -1, "INTERFACE_ORIENTATION_PORTRAIT",				( u32 )INTERFACE_ORIENTATION_PORTRAIT );
 	state.SetField ( -1, "INTERFACE_ORIENTATION_PORTRAIT_UPSIDE_DOWN",	( u32 )INTERFACE_ORIENTATION_PORTRAIT_UPSIDE_DOWN );
 	state.SetField ( -1, "INTERFACE_ORIENTATION_LANDSCAPE_LEFT",		( u32 )INTERFACE_ORIENTATION_LANDSCAPE_LEFT );
 	state.SetField ( -1, "INTERFACE_ORIENTATION_LANDSCAPE_RIGHT",		( u32 )INTERFACE_ORIENTATION_LANDSCAPE_RIGHT );
+#endif
 
 	luaL_Reg regTable [] = {
 		{ "canOpenURL",					_canOpenURL },
 		{ "getAvailableStorage",		_getAvailableStorage },
 		{ "getDirectoryInDomain",		_getDirectoryInDomain },
-		{ "getInterfaceOrientation",	_getInterfaceOrientation },
 		{ "getIPAddress",				_getIPAddress },
 		{ "getListener",				&MOAIGlobalEventSource::_getListener < MOAIAppIOS > },
 		{ "getResourcePathInBundle",	_getResourcePathInBundle },
@@ -526,10 +554,13 @@ void MOAIAppIOS::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "getUTCTime",					_getUTCTime },
 		{ "openURL",					_openURL },
 		{ "openURLWithParams",			_openURLWithParams },
-		{ "sendMail",					_sendMail },
 		{ "setListener",				&MOAIGlobalEventSource::_setListener < MOAIAppIOS > },
+#if !TARGET_OS_TV
+		{ "getInterfaceOrientation",	_getInterfaceOrientation },
+		{ "sendMail",					_sendMail },
 		{ "takeCamera",					_takeCamera },
 		{ "vibrate",					_vibrate },
+#endif
 		{ NULL, NULL }
 	};
 

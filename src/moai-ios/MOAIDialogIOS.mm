@@ -5,56 +5,6 @@
 #import <moai-ios/MOAIDialogIOS.h>
 
 //================================================================//
-// LuaAlertView
-//================================================================//
-@implementation LuaAlertView
-
-	//----------------------------------------------------------------//
-	- ( id ) initWithTitle:( NSString* )title message:( NSString* )message cancelButtonTitle:( NSString* )cancelButtonTitle {
-
-		positiveButtonIndex = -1;
-		neutralButtonIndex = -1;
-		negativeButtonIndex = -1;
-
-		return [ super initWithTitle:title message:message delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:nil ];
-	}
-
-	//----------------------------------------------------------------//
-	- ( void ) alertView:( UIAlertView* )alertView didDismissWithButtonIndex:( NSInteger )buttonIndex {
-		
-		UNUSED ( alertView );
-		
-		if ( self->callback ) {
-			MOAIScopedLuaState state = self->callback.GetSelf ();
-			
-			int dialogResult = -1;
-			if ( buttonIndex == positiveButtonIndex ) {
-				
-				dialogResult = MOAIDialogIOS::DIALOG_RESULT_POSITIVE;
-			}
-			else if ( buttonIndex == neutralButtonIndex ) {
-				
-				dialogResult = MOAIDialogIOS::DIALOG_RESULT_NEUTRAL;
-			}
-			else if ( buttonIndex == negativeButtonIndex ) {
-				
-				dialogResult = MOAIDialogIOS::DIALOG_RESULT_NEGATIVE;
-			}
-			else if ( buttonIndex == [ alertView cancelButtonIndex ] ) {
-				
-				dialogResult = MOAIDialogIOS::DIALOG_RESULT_CANCEL;
-			}
-
-			state.Push ( dialogResult );
-			state.DebugCall ( 1, 0 );
-		}
-		
-		[ self release ];
-	}
-
-@end
-
-//================================================================//
 // lua
 //================================================================//
 
@@ -82,6 +32,65 @@ int MOAIDialogIOS::_showDialog ( lua_State* L ) {
 	cc8* negative = state.GetValue < cc8* >( 5, nil );
 	bool cancelable = state.GetValue < bool >( 6, false );
 
+	__block UIAlertController *alertController =
+	[UIAlertController
+	 alertControllerWithTitle:[NSString stringWithUTF8String:title]
+	 message:[NSString stringWithUTF8String:message]
+	 preferredStyle:UIAlertControllerStyleAlert];
+	
+	__block UIAlertAction *cancelAction = nil;
+	__block UIAlertAction *positiveAction = nil;
+	__block UIAlertAction *neutralAction = nil;
+	__block UIAlertAction *negativeAction = nil;
+	__block MOAILuaStrongRef callback = NULL;
+
+	if (state.IsType(7, LUA_TFUNCTION)) {
+		callback.SetRef(state, 7);
+	}
+
+	void (^dismissHandler)(UIAlertAction * action) = ^(UIAlertAction *action) {
+		if (callback != 0) {
+			int dialogResult = -1;
+			if (action == positiveAction) {
+				dialogResult = MOAIDialogIOS::DIALOG_RESULT_POSITIVE;
+			} else if (action == neutralAction) {
+				dialogResult = MOAIDialogIOS::DIALOG_RESULT_NEUTRAL;
+			} else if (action == negativeAction) {
+				dialogResult = MOAIDialogIOS::DIALOG_RESULT_NEGATIVE;
+			} else if (action == cancelAction) {
+				dialogResult = MOAIDialogIOS::DIALOG_RESULT_CANCEL;
+			}
+
+			MOAIScopedLuaState luaState = callback.GetSelf ();
+			luaState.Push(dialogResult);
+			luaState.DebugCall(1, 0);
+		}
+	};
+
+	if (positive != nil) {
+		positiveAction = [UIAlertAction actionWithTitle:[NSString stringWithUTF8String:positive] style:UIAlertActionStyleDefault handler:dismissHandler];
+		[alertController addAction:positiveAction];
+	}
+	
+	if (neutral != nil) {
+		neutralAction = [UIAlertAction actionWithTitle:[NSString stringWithUTF8String:neutral] style:UIAlertActionStyleDefault handler:dismissHandler];
+		[alertController addAction:neutralAction];
+	}
+	
+	if (negative != nil) {
+		negativeAction = [UIAlertAction actionWithTitle:[NSString stringWithUTF8String:negative] style:UIAlertActionStyleDefault handler:dismissHandler];
+		[alertController addAction:negativeAction];
+	}
+	
+	if (cancelable) {
+		cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:dismissHandler];
+		[alertController addAction:cancelAction];
+	}
+	
+	UIWindow *window = [UIApplication sharedApplication].windows.firstObject;
+	[window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+#if 0
 	LuaAlertView* alert = [[ LuaAlertView alloc ] initWithTitle:[ NSString stringWithUTF8String:title ] message:[ NSString stringWithUTF8String:message ] cancelButtonTitle:(( cancelable ) ? @"Cancel" : nil )];
 	
 	if ( state.IsType ( 7, LUA_TFUNCTION )) {
@@ -105,7 +114,7 @@ int MOAIDialogIOS::_showDialog ( lua_State* L ) {
 	}
 		
 	[ alert show ];
-	
+#endif
 	return 0;
 }
 

@@ -5,7 +5,9 @@
 #import "host.h"
 #import "headers.h"
 
+#if !TARGET_OS_TV
 #import <contrib/MOAIOpenUDID.h>
+#endif
 #import <AdSupport/ASIdentifierManager.h>
 #import <moai-sim/MOAIGfxDevice.h>
 
@@ -33,8 +35,10 @@ void AKUIosContextInitialize () {
 	REGISTER_LUA_CLASS ( MOAIAppIOS )
 	REGISTER_LUA_CLASS ( MOAIDialogIOS )
 	REGISTER_LUA_CLASS ( MOAIKeyboardIOS )
+#if !TARGET_OS_TV
 	REGISTER_LUA_CLASS ( MOAINotificationsIOS )
 	REGISTER_LUA_CLASS ( MOAIWebViewIOS )
+#endif
 
 	// Device properties
 	MOAIEnvironment& environment = MOAIEnvironment::Get ();
@@ -49,9 +53,15 @@ void AKUIosContextInitialize () {
 	environment.SetValue ( MOAI_ENV_horizontalResolution,	[[ UIScreen mainScreen ] bounds ].size.width * [[ UIScreen mainScreen ] scale ] );	
 	environment.SetValue ( MOAI_ENV_iosRetinaDisplay,		[[ UIScreen mainScreen ] scale ] >= 2.0 );
 	environment.SetValue ( MOAI_ENV_languageCode,			[[[ NSLocale currentLocale ] objectForKey: NSLocaleLanguageCode ] UTF8String ]);
+#if TARGET_OS_TV
 	environment.SetValue ( MOAI_ENV_osBrand,				"iOS" );
+#else
+	environment.SetValue ( MOAI_ENV_osBrand,				"tvOS" );
+#endif
 	environment.SetValue ( MOAI_ENV_osVersion,				[[ UIDevice currentDevice ].systemVersion UTF8String ]);
+#if !TARGET_OS_TV
 	environment.SetValue ( MOAI_ENV_openUdid,				[[ MOAIOpenUDID value] UTF8String ]);
+#endif
 	environment.SetValue ( MOAI_ENV_systemLanguageCode,		[[[ NSLocale preferredLanguages ] objectAtIndex: 0 ] UTF8String ]);
 	environment.SetValue ( MOAI_ENV_verticalResolution,		[[ UIScreen mainScreen ] bounds ].size.height * [[ UIScreen mainScreen ] scale ]);
 	
@@ -83,6 +93,8 @@ void AKUIosContextInitialize () {
     environment.SetValue ( MOAI_ENV_devPlatform, devPlatform );
 }
 
+#if !TARGET_OS_TV
+
 //----------------------------------------------------------------//
 void AKUIosNotifyLocalNotificationReceived ( UILocalNotification* notification ) {
 
@@ -100,6 +112,8 @@ void AKUIosNotifyRemoteNotificationRegistrationComplete ( NSData* deviceToken, N
 
 	MOAINotificationsIOS::Get ().NotifyRemoteRegistrationComplete ( deviceToken, error );
 }
+
+#endif
 
 //----------------------------------------------------------------//
 void AKUIosOpenUrl ( NSURL* url, NSString* sourceApplication ) {

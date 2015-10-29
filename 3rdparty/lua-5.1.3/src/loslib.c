@@ -36,8 +36,13 @@ static int os_pushresult (lua_State *L, int i, const char *filename) {
 
 
 static int os_execute (lua_State *L) {
+#if TARGET_OS_TV
+  // WARNING: Does not do anything on tvOS
+  return 0;
+#else
   lua_pushinteger(L, system(luaL_optstring(L, 1, NULL)));
   return 1;
+#endif
 }
 
 

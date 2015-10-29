@@ -9,8 +9,10 @@
 #import <moai-ios/MOAIAppIOS.h>
 #import <moai-ios/MOAIDialogIOS.h>
 #import <moai-ios/MOAIKeyboardIOS.h>
+#if !TARGET_OS_TV
 #import <moai-ios/MOAINotificationsIOS.h>
 #import <moai-ios/MOAIWebViewController.h>
 #import <moai-ios/MOAIWebViewIOS.h>
+#endif
 
 //#endif
