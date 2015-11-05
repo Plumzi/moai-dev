@@ -59,6 +59,7 @@ MODULE_APP_DECLARATIONS			= ''
 MODULE_MANIFEST_PERMISSIONS		= ''
 MODULE_PROJECT_INCLUDES			= ''
 
+LDLIBS 							= {}
 STATIC_LIBRARIES				= {} -- set of all static libraries
 WHOLE_STATIC_LIBRARIES			= {}
 
@@ -83,9 +84,11 @@ TEMP_FILENAME					= INVOKE_DIR .. '.tmp'
 --==============================================================
 
 local addLibraries
+local addDynamicLibraries
 local concat
 local getGlobalsString
 local getLibrariesString
+local getDynamicLibrariesString
 local getModulesString
 local getPluginsStringFunc
 local importJava
@@ -112,6 +115,10 @@ addLibraries = function ( mask, libraries )
 			addLibraries ( mask, v )
 		end
 	end
+end
+
+addDynamicLibraries = function ( libraries )
+	addLibraries (LDLIBS, libraries)
 end
 
 ----------------------------------------------------------------
@@ -161,6 +168,18 @@ getLibrariesString = function ( libraries, mask )
 		if mask [ v ] then
 			str = ( str and ( str .. ' ' ) or '' ) .. v
 		end
+	end
+
+	return str or ''
+end
+
+----------------------------------------------------------------
+getDynamicLibrariesString = function ( )
+
+	local str
+
+	for k, v in pairs ( LDLIBS ) do
+		str = ( str and ( str .. ' ' ) or '' ) .. '-l' .. k
 	end
 
 	return str or ''
@@ -381,9 +400,14 @@ makeTarget = function ( target )
 	preprocessorString = preprocessorString .. string.format ( '\tMY_LOCAL_CFLAGS += -DNDEBUG\n' )
 	preprocessorString = preprocessorString .. string.format ( '\tMY_LOCAL_CFLAGS += -DMOAI_KEEP_ASSERT=1\n' )
 
+	for i,v in ipairs(LDLIBS) do
+		print(i, v)
+	end
+
 	util.replaceInFile ( targetMakefile, {
 		[ '@LIB_NAME@' ]					= target.NAME,
 		[ '@AKU_PREPROCESSOR@' ]			= preprocessorString,
+		[ '@LDLIBS@' ] 						= getDynamicLibrariesString (),
 		[ '@STATIC_LIBRARIES@' ] 			= getLibrariesString ( STATIC_LIBRARIES, libraries ),
 		[ '@WHOLE_STATIC_LIBRARIES@' ] 		= getLibrariesString ( WHOLE_STATIC_LIBRARIES, libraries ),
 	})
@@ -397,6 +421,8 @@ processConfigFile = function ( filename )
 
 	local config = { MOAI_SDK_HOME = MOAI_SDK_HOME }
 	util.dofileWithEnvironment ( filename, config )
+	
+	addDynamicLibraries(config.LDLIBS)
 
 	STATIC_LIBRARIES			= util.joinTables ( config.STATIC_LINK_ORDER, STATIC_LIBRARIES )
 	WHOLE_STATIC_LIBRARIES		= util.joinTables ( config.WHOLE_STATIC_LIBRARIES, WHOLE_STATIC_LIBRARIES )
@@ -411,6 +437,8 @@ processConfigFile = function ( filename )
 		MY_ARM_ARCH = config.SETTINGS.MY_ARM_ARCH or MY_ARM_ARCH
 		MY_APP_PLATFORM = config.SETTINGS.MY_APP_PLATFORM or MY_APP_PLATFORM
 	end
+
+
 
 	util.mergeTables ( MODULES, config.MODULES )
 	util.mergeTables ( GLOBALS, config.GLOBALS )

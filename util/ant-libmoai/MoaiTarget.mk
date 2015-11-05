@@ -8,7 +8,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE 		:= @LIB_NAME@
-LOCAL_LDLIBS 		:= -llog -lGLESv1_CM -lGLESv2
+LOCAL_LDLIBS 		:= @LDLIBS@ -llog -lGLESv1_CM -lGLESv2
 
 @AKU_PREPROCESSOR@
 
