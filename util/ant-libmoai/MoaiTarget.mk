@@ -17,7 +17,7 @@ LOCAL_C_INCLUDES 	:= $(MY_HEADER_SEARCH_PATHS)
 
 LOCAL_SRC_FILES 	+= src/jni.cpp
 LOCAL_SRC_FILES 	+= $(wildcard $(MOAI_SDK_HOME)/src/host-modules/*.cpp)
-LOCAL_SRC_FILES 	+= src/aku_plugins.cpp
+#LOCAL_SRC_FILES 	+= src/aku_plugins.cpp
 
 LOCAL_STATIC_LIBRARIES := @STATIC_LIBRARIES@ libmoai-util libmoai-core libzl-core libcontrib libexpat libjson liblua libsfmt libsqlite libtinyxml libzl-vfs libzlib libcpufeatures
 LOCAL_WHOLE_STATIC_LIBRARIES := @WHOLE_STATIC_LIBRARIES@ libmoai-core
