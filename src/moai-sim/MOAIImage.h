@@ -112,6 +112,9 @@ private:
 	static int		_setRGBA					( lua_State* L );
 	static int		_simpleThreshold			( lua_State* L );
 	static int		_write						( lua_State* L );
+	static int		_getData					( lua_State* L );
+	static int		_isOpaque					( lua_State* L );
+	static int		_getContentRect				( lua_State* L );
 
 	//----------------------------------------------------------------//
 	void			Alloc					();
@@ -206,6 +209,7 @@ public:
 	void					Take						( MOAIImage& image );
 	void					Transform					( u32 transform );
 	bool					Write						( ZLStream& stream, cc8* formatName );
+	ZLIntRect				GetContentRect				();
 };
 
 #endif

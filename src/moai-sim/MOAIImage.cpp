@@ -9,6 +9,7 @@
 #include <moai-sim/MOAIGfxDevice.h>
 #include <float.h>
 #include <contrib/edtaa3func.h>
+#include <moai-crypto/headers.h>
 
 //================================================================//
 // local
@@ -984,6 +985,67 @@ int MOAIImage::_write ( lua_State* L ) {
 	
 	state.Push ( result );
 	return 1;
+}
+
+//----------------------------------------------------------------//
+/**	@lua	getData
+	@text	returns the bitmap data
+ 
+	@in		MOAIImage self
+	@out	byte array string
+ */
+int MOAIImage::_getData(lua_State *L) {
+	MOAI_LUA_SETUP ( MOAIImage, "U" )
+
+	lua_pushlstring ( state, (const char*)self->mBitmap, self->GetBitmapSize() );
+	return 1;
+}
+
+//----------------------------------------------------------------//
+/**	@lua	isOpaque
+	@text	false if at least one pixel is not opaque
+ 
+	@in		MOAIImage self
+	@out	bool
+ */
+int MOAIImage::_isOpaque(lua_State *L) {
+	MOAI_LUA_SETUP ( MOAIImage, "U" )
+	
+	for ( u32 y = 0; y < self->mHeight; y++ ) {
+		for ( u32 x = 0; x < self->mWidth; x++ ) {
+			ZLColorVec color;
+			color.SetRGBA ( self->GetColor ( x, y ));
+			if (color.mA != 255) {
+				lua_pushboolean(L, 0);
+				return 1;
+			}
+		}
+	}
+	
+	// it's opaque!
+	lua_pushboolean(L, 1);
+	return 1;
+}
+
+//----------------------------------------------------------------//
+/**	@lua	getContentRect
+	@text	computes the content rect, not taking in account any boundary transparency
+ 
+	@in		MOAIImage self
+	@out	rect
+ */
+int MOAIImage::_getContentRect(lua_State *L) {
+	MOAI_LUA_SETUP ( MOAIImage, "U" )
+	
+	ZLIntRect contentRect = self->GetContentRect();
+	int left, right, top, bottom;
+	contentRect.GetRect(left, top, right, bottom);
+	lua_pushnumber ( state,  left);
+	lua_pushnumber ( state,	 top );
+	lua_pushnumber ( state,  right);
+	lua_pushnumber ( state,	 bottom );
+	
+	return 4;
 }
 
 //================================================================//
@@ -2807,6 +2869,11 @@ void MOAIImage::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "simpleThreshold",			_simpleThreshold },
 		{ "write",						_write },
 		{ "writePNG",					_write }, // back compat
+		{ "getData",					_getData },
+		{ "isOpaque",					_isOpaque },
+		{ "getContentRect",				_getContentRect },
+		
+		
 		{ NULL, NULL }
 	};
 
@@ -3062,4 +3129,75 @@ bool MOAIImage::Write ( ZLStream& stream, cc8* formatName ) {
 
 	MOAIImageFormat* format = MOAIImageFormatMgr::Get ().FindFormat ( formatName );
 	return format && format->WriteImage ( *this, stream );
+}
+
+
+//----------------------------------------------------------------//
+ZLIntRect MOAIImage::GetContentRect () {
+	u32 cropLeft = -1;
+	for ( u32 x = 0; x < this->mWidth; x++ ) {
+		for ( u32 y = 0; y < this->mHeight; y++ ) {
+			ZLColorVec color;
+			color.SetRGBA ( this->GetColor ( x, y ));
+			if (color.mA > 0) {
+				cropLeft = x;
+				break;
+			}
+		}
+		if (cropLeft != -1)
+			break;
+	}
+	
+	if (cropLeft == -1) {
+		// completely empty image!
+		ZLIntRect rect;
+		rect.Init ( 0, 0, 0, 0 );
+		return rect;
+	}
+
+	u32 cropRight = -1;
+	for ( u32 x = this->mWidth-1; x >= 0; x-- ) {
+		for ( u32 y = 0; y < this->mHeight; y++ ) {
+			ZLColorVec color;
+			color.SetRGBA ( this->GetColor ( x, y ));
+			if (color.mA > 0) {
+				cropRight = x+1;
+				break;
+			}
+		}
+		if (cropRight != -1)
+			break;
+	}
+
+	u32 cropTop = -1;
+	for ( u32 y = 0; y < this->mHeight; y++ ) {
+		for ( u32 x = 0; x < this->mWidth; x++ ) {
+			ZLColorVec color;
+			color.SetRGBA ( this->GetColor ( x, y ));
+			if (color.mA > 0) {
+				cropTop = y;
+				break;
+			}
+		}
+		if (cropTop != -1)
+			break;
+	}
+
+	u32 cropBottom = -1;
+	for ( u32 y = this->mHeight-1; y >= 0; y-- ) {
+		for ( u32 x = 0; x < this->mWidth; x++ ) {
+			ZLColorVec color;
+			color.SetRGBA ( this->GetColor ( x, y ));
+			if (color.mA > 0) {
+				cropBottom = y+1;
+				break;
+			}
+		}
+		if (cropBottom != -1)
+			break;
+	}
+
+	ZLIntRect rect;
+	rect.Init ( cropLeft, cropTop, cropRight, cropBottom );
+	return rect;
 }
