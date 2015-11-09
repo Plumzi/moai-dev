@@ -90,31 +90,6 @@ int MOAIDialogIOS::_showDialog ( lua_State* L ) {
 	UIWindow *window = [UIApplication sharedApplication].windows.firstObject;
 	[window.rootViewController presentViewController:alertController animated:YES completion:nil];
 
-#if 0
-	LuaAlertView* alert = [[ LuaAlertView alloc ] initWithTitle:[ NSString stringWithUTF8String:title ] message:[ NSString stringWithUTF8String:message ] cancelButtonTitle:(( cancelable ) ? @"Cancel" : nil )];
-	
-	if ( state.IsType ( 7, LUA_TFUNCTION )) {
-		
-		alert->callback.SetRef ( state, 7 );
-	}	
-	
-	if ( positive != nil ) {
-		
-		alert->positiveButtonIndex = ( int )[ alert addButtonWithTitle:[ NSString stringWithUTF8String:positive ]];
-	}
-
-	if ( neutral != nil ) {
-		
-		alert->neutralButtonIndex = ( int )[ alert addButtonWithTitle:[ NSString stringWithUTF8String:neutral ]];
-	}
-
-	if ( negative != nil ) {
-		
-		alert->negativeButtonIndex = ( int )[ alert addButtonWithTitle:[ NSString stringWithUTF8String:negative ]];
-	}
-		
-	[ alert show ];
-#endif
 	return 0;
 }
 

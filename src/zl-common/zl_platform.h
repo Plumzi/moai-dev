@@ -17,11 +17,6 @@
 			#define MOAI_OS_IOS
 		#endif
 
-//		#if TARGET_IPHONE_SIMULATOR
-//			#define MOAI_OS_IPHONE_SIMULATOR
-//		#else
-//			#define MOAI_OS_IPHONE_DEVICE
-//		#endif
 	#else
 		#define MOAI_OS_OSX
 	#endif
