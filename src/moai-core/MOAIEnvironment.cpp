@@ -208,6 +208,7 @@ void MOAIEnvironment::RegisterLuaClass ( MOAILuaState& state ) {
 	state.SetField ( -1, "OS_BRAND_LINUX", OS_BRAND_LINUX );
 	state.SetField ( -1, "OS_BRAND_NOOK", OS_BRAND_NOOK );
 	state.SetField ( -1, "OS_BRAND_OSX", OS_BRAND_OSX );
+	state.SetField ( -1, "OS_BRAND_TVOS", OS_BRAND_TVOS );
 	state.SetField ( -1, "OS_BRAND_WINDOWS", OS_BRAND_WINDOWS );
 	state.SetField ( -1, "OS_BRAND_UNAVAILABLE", OS_BRAND_UNAVAILABLE );
 

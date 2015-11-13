@@ -49,6 +49,7 @@
 #define OS_BRAND_LINUX 			"Linux"
 #define OS_BRAND_NOOK			"Nook"
 #define OS_BRAND_OSX 			"OSX"
+#define OS_BRAND_TVOS 			"tvOS"
 #define OS_BRAND_WINDOWS 		"Windows"
 #define OS_BRAND_UNAVAILABLE 	"Unavailable"
 
