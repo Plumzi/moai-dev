@@ -183,7 +183,11 @@ void MOAIHttpTaskNSURL::PerformAsync () {
 	NSURLRequest* request = this->Prepare ();
 	MOAIHttpTaskNSURLDelegate* delegate = [[[ MOAIHttpTaskNSURLDelegate alloc ] initWithTask:this ] autorelease ];
 	
-	[ NSURLConnection connectionWithRequest:request delegate:delegate ];
+	// NSURLConnection requires to be started from the main thread
+	dispatch_async(dispatch_get_main_queue(), ^{
+		 [NSURLConnection connectionWithRequest:request delegate:delegate];
+	});
+
 	//dispatch_async ( dispatch_get_main_queue(), ^{ connection_ = [ this->mEasyHandle initWithRequest: this->mRequest delegate: mUrlDelegate ]; });
 }
 
