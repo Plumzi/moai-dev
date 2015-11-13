@@ -54,9 +54,9 @@ void AKUIosContextInitialize () {
 	environment.SetValue ( MOAI_ENV_iosRetinaDisplay,		[[ UIScreen mainScreen ] scale ] >= 2.0 );
 	environment.SetValue ( MOAI_ENV_languageCode,			[[[ NSLocale currentLocale ] objectForKey: NSLocaleLanguageCode ] UTF8String ]);
 #if TARGET_OS_TV
-	environment.SetValue ( MOAI_ENV_osBrand,				OS_BRAND_IOS );
-#else
 	environment.SetValue ( MOAI_ENV_osBrand,				OS_BRAND_TVOS );
+#else
+	environment.SetValue ( MOAI_ENV_osBrand,				OS_BRAND_IOS );
 #endif
 	environment.SetValue ( MOAI_ENV_osVersion,				[[ UIDevice currentDevice ].systemVersion UTF8String ]);
 #if !TARGET_OS_TV
