@@ -115,6 +115,7 @@ void MOAIMultiTexture::RegisterLuaFuncs ( MOAILuaState& state ) {
 
 	luaL_Reg regTable [] = {
 		{ "reserve",				_reserve },
+		{ "release",				_release },
 		{ "setTexture",				_setTexture },
 		{ NULL, NULL }
 	};
