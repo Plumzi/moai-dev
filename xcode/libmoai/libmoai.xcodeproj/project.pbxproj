@@ -24561,6 +24561,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -24630,8 +24631,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"../../src/zl-vfs\"",
-					"\"../../src/config\"",
 					"\"../../src/config-default\"",
 					"\"../../src\"",
 					"\"../../3rdparty\"",
@@ -24681,15 +24680,18 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = (
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-include",
-					"\"zl-vfs/zl_replace.h\"",
+					"\"../../src/zl-vfs/zl_replace.h\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
+				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -27759,6 +27761,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -27828,8 +27831,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"../../src/zl-vfs\"",
-					"\"../../src/config\"",
 					"\"../../src/config-default\"",
 					"\"../../src\"",
 					"\"../../3rdparty\"",
@@ -27879,15 +27880,19 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				ONLY_ACTIVE_ARCH = YES;
+				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = (
 					"-include",
-					"\"zl-vfs/zl_replace.h\"",
+					"\"../../src/zl-vfs/zl_replace.h\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -33148,7 +33153,7 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/patrick/git/moai-dev/3rdparty/facebook-ios-sdk-3.14.1",
+					"../../../3rdparty/facebook-ios-sdk-4.5.1",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					USE_ARES,
@@ -33188,7 +33193,7 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/patrick/git/moai-dev/3rdparty/facebook-ios-sdk-3.14.1",
+					"../../../3rdparty/facebook-ios-sdk-4.5.1",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NDEBUG,
@@ -33223,7 +33228,7 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/patrick/git/moai-dev/3rdparty/facebook-ios-sdk-3.14.1",
+					"../../../3rdparty/facebook-ios-sdk-4.5.1",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NDEBUG,
@@ -33258,7 +33263,7 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/patrick/git/moai-dev/3rdparty/facebook-ios-sdk-3.14.1",
+					"../../../3rdparty/facebook-ios-sdk-4.5.1",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NDEBUG,
@@ -34727,6 +34732,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -34796,8 +34802,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"../../src/zl-vfs\"",
-					"\"../../src/config\"",
 					"\"../../src/config-default\"",
 					"\"../../src\"",
 					"\"../../3rdparty\"",
@@ -34847,15 +34851,18 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = (
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-include",
-					"\"zl-vfs/zl_replace.h\"",
+					"\"../../src/zl-vfs/zl_replace.h\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
+				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -35119,6 +35126,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -35188,8 +35196,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"../../src/zl-vfs\"",
-					"\"../../src/config\"",
 					"\"../../src/config-default\"",
 					"\"../../src\"",
 					"\"../../3rdparty\"",
@@ -35239,15 +35245,18 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = (
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-include",
-					"\"zl-vfs/zl_replace.h\"",
+					"\"../../src/zl-vfs/zl_replace.h\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
+				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Wall",

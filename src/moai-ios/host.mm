@@ -8,8 +8,11 @@
 #if !TARGET_OS_TV
 #import <contrib/MOAIOpenUDID.h>
 #endif
-#import <AdSupport/ASIdentifierManager.h>
 #import <moai-sim/MOAIGfxDevice.h>
+
+#if AKU_WITH_IFA
+#import <AdSupport/ASIdentifierManager.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/sysctl.h>
@@ -74,6 +77,7 @@ void AKUIosContextInitialize () {
 		environment.SetValue ( MOAI_ENV_iosIFV, [[[[UIDevice currentDevice] identifierForVendor ] UUIDString ] UTF8String ]);
 	}
 	
+	#if AKU_WITH_IFA
 	Class identifierManagerClass = NSClassFromString ( @"ASIdentifierManager" );
 	if ( identifierManagerClass ) {
 		ASIdentifierManager* sharedManager = [ identifierManagerClass sharedManager ];
@@ -81,6 +85,7 @@ void AKUIosContextInitialize () {
 			environment.SetValue ( MOAI_ENV_iosIFA, [[[ sharedManager advertisingIdentifier ] UUIDString ] UTF8String ]);
 		}
     }
+	#endif
 	
     int name [] = { CTL_HW, HW_MACHINE };
 	
