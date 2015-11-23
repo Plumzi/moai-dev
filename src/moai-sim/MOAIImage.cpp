@@ -579,15 +579,16 @@ int MOAIImage::_generateSDF( lua_State* L ) {
 	@in		number xMax
 	@in		number yMax
 	@opt	number sizeInPixels		Default is 5
+	@opt	number threshold		Default is 0, values from 0 to 1
 	@out	nil
 */
 int MOAIImage::_generateSDFAA ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIImage, "UNNNN" )
 	
 	ZLIntRect rect = state.GetRect <int>( 2 );
-	float threshold = state.GetValue < float >( 6, 5 );
-	
-	self->GenerateSDFAA ( rect, threshold );
+	float sizeInPixels = state.GetValue < float >( 6, 5 );
+	float threshold = state.GetValue < float >( 7, 0 );
+	self->GenerateSDFAA ( rect, sizeInPixels, threshold );
 	
 	return 0;
 }
@@ -2480,7 +2481,7 @@ void MOAIImage::GenerateSDF ( ZLIntRect rect ) {
 }
 
 //----------------------------------------------------------------//
-void MOAIImage::GenerateSDFAA ( ZLIntRect rect, float sizeInPixels ) {
+void MOAIImage::GenerateSDFAA ( ZLIntRect rect, float sizeInPixels, float threshold ) {
 	
 	int width = rect.Width ();
 	int height = rect.Height ();
@@ -2493,6 +2494,9 @@ void MOAIImage::GenerateSDFAA ( ZLIntRect rect, float sizeInPixels ) {
 	double* outside	= ( double* ) calloc ( width * height, sizeof ( double ));
 	double* inside	= ( double* ) calloc ( width * height, sizeof ( double ));
 	
+	threshold = MIN(threshold, 1);
+	threshold = MAX(threshold, 0);
+	
 	// Convert img into double (data)
 	for ( u32 y = 0; y < height; ++y ) {
 		for ( u32 x = 0; x < width; ++x ) {
@@ -2501,7 +2505,15 @@ void MOAIImage::GenerateSDFAA ( ZLIntRect rect, float sizeInPixels ) {
 			ZLColorVec colorVec;
 			colorVec.SetRGBA ( color );
 			double v = colorVec.mA;
-			data [ y * width + x ] = v;
+			if (v < threshold) {
+				data [ y * width + x ] = 0;
+			} else {
+				if (threshold == 1) {
+					data [ y * width + x ] = v==1?1:0;
+				} else {
+					data [ y * width + x ] = (v - threshold) / (1 - threshold);
+				}
+			}
 		}
 	}
 	

@@ -170,7 +170,7 @@ public:
 	void					GammaCorrection				( const MOAIImage& image, float gamma );
 	void					GenerateOutlineFromSDF		( ZLIntRect rect, float distMin, float distMax, float r, float g, float b, float a );
 	void					GenerateSDF					( ZLIntRect rect );
-	void					GenerateSDFAA				( ZLIntRect rect, float sizeInPixels );
+	void					GenerateSDFAA				( ZLIntRect rect, float sizeInPixels, float threshold );
 	void					GenerateSDFDeadReckoning	( ZLIntRect rect, int threshold );
 	u32						GetBitmapSize				() const;
 	ZLIntRect				GetBounds					();
