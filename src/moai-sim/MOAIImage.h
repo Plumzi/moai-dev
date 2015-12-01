@@ -115,6 +115,7 @@ private:
 	static int		_getData					( lua_State* L );
 	static int		_isOpaque					( lua_State* L );
 	static int		_getContentRect				( lua_State* L );
+	static int		_cleanupAlpha				( lua_State* L );
 
 	//----------------------------------------------------------------//
 	void			Alloc					();
@@ -199,6 +200,7 @@ public:
 							MOAIImage					();
 							~MOAIImage					();
 	void					PadToPow2					( const MOAIImage& image );
+	void					CleanupAlpha					( const MOAIImage& image );
 	void					PremultiplyAlpha			( const MOAIImage& image );
 	void					Print						();
 	void					RegisterLuaClass			( MOAILuaState& state );

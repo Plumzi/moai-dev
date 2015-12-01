@@ -1195,6 +1195,20 @@ int MOAIImage::_getContentRect(lua_State *L) {
 	return 4;
 }
 
+//----------------------------------------------------------------//
+/**	@lua	cleanupAlpha
+	@text	sets RGB to 0 for all fully transparent pixels. Prevents encoding useless data
+ 
+	@in		MOAIImage self
+	@out	nothing
+ */
+int MOAIImage::_cleanupAlpha(lua_State *L) {
+	MOAI_LUA_SETUP ( MOAIImage, "U" )
+	
+	self->CleanupAlpha(*self);
+	return 0;
+}
+
 //================================================================//
 // MOAIImage
 //================================================================//
@@ -3047,6 +3061,23 @@ void MOAIImage::PadToPow2 ( const MOAIImage& image ) {
 }
 
 //----------------------------------------------------------------//
+void MOAIImage::CleanupAlpha ( const MOAIImage& image ) {
+	
+	if ( this != &image ) {
+		this->Copy ( image );
+	}
+	
+	if ( this->mPixelFormat == TRUECOLOR ) {
+		for ( u32 y = 0; y < this->mHeight; ++y ) {
+			ZLColor::CleanupAlpha ( this->GetRowAddr ( y ), this->mColorFormat, this->mWidth );
+		}
+	}
+	else {
+		ZLColor::CleanupAlpha ( this->mPalette, this->mColorFormat, this->GetPaletteCount ());
+	}
+}
+
+//----------------------------------------------------------------//
 void MOAIImage::PremultiplyAlpha ( const MOAIImage& image ) {
 
 	if ( this != &image ) {
@@ -3172,6 +3203,7 @@ void MOAIImage::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "getData",					_getData },
 		{ "isOpaque",					_isOpaque },
 		{ "getContentRect",				_getContentRect },
+		{ "cleanupAlpha",				_cleanupAlpha },
 		
 		
 		{ NULL, NULL }
@@ -3394,7 +3426,7 @@ void MOAIImage::Take ( MOAIImage& image ) {
 void MOAIImage::Transform ( u32 transform ) {
 	
 	if ( !transform ) return;
-	
+
 	if ( transform & MOAIImageTransform::PREMULTIPLY_ALPHA ) {
 		this->PremultiplyAlpha ( *this );
 	}

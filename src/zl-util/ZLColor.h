@@ -90,6 +90,7 @@ namespace ZLColor {
 	u32				NearestNeighbor				( u32 c0, u32 c1, u32 c2, u32 c3, u8 xt, u8 yt );
 	u32				PackRGBA					( int r, int g, int b, int a );
 	u32				PackRGBA					( float r, float g, float b, float a );
+	void			CleanupAlpha				( void* colors, ColorFormat format, u32 nColors );
 	void			PremultiplyAlpha			( void* colors, ColorFormat format, u32 nColors );
 	u32				Scale						( u32 c0, u8 s ); // scale all components by s and normalize back to 255
 	ZLColorVec		Set							( u32 c0 );

@@ -862,6 +862,70 @@ void ZLColor::PremultiplyAlpha ( void* colors, ColorFormat format, u32 nColors )
 }
 
 //----------------------------------------------------------------//
+void ZLColor::CleanupAlpha ( void* colors, ColorFormat format, u32 nColors ) {
+	
+	u32 color;
+	u32 alpha;
+	
+	switch ( format ) {
+			
+		case A_1:
+		case A_4:
+		case A_8:
+		case RGB_888:
+		case RGB_565:
+			break;
+			
+		case LA_8:
+			
+			for ( u32 i = 0; i < nColors; ++i ) {
+				color = *( u32* )colors;
+				alpha = ( color >> 0x18 ) & 0xFF;
+				if (alpha == 0)
+					*( u16* )colors = ( alpha << 0x08 );
+				colors = ( void* )(( size_t )colors + 2 );
+			}
+			break;
+			
+		case RGBA_5551:
+			
+			for ( u32 i = 0; i < nColors; ++i ) {
+				color = *( u16* )colors;
+				alpha = ( color >> 0x0F ) & 0x01;
+				if (alpha == 0)
+					*( u16* )colors = ( u16 )( alpha << 0x0F );
+				colors = ( void* )(( size_t )colors + 2 );
+			}
+			break;
+			
+		case RGBA_4444:
+			
+			for ( u32 i = 0; i < nColors; ++i ) {
+				color = *( u16* )colors;
+				alpha = color & 0x0F;
+				if (alpha == 0)
+					*( u16* )colors = ( u16 )(	alpha );
+				colors = ( void* )(( size_t )colors + 2 );
+			}
+			break;
+			
+		case RGBA_8888:
+			
+			for ( u32 i = 0; i < nColors; ++i ) {
+				color = *( u32* )colors;
+				alpha = ( color >> 0x18 ) & 0xFF;
+				if (alpha == 0)
+					*( u32* )colors = ( alpha << 0x18 );
+				colors = ( void* )(( size_t )colors + 4 );
+			}
+			break;
+			
+		default:
+			break;
+	}
+}
+
+//----------------------------------------------------------------//
 u32 ZLColor::Scale ( u32 c0, u8 s ) {
 	
 	u8* cb0 = ( u8* )&c0;
