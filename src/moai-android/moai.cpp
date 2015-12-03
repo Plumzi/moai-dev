@@ -91,6 +91,7 @@
 			INPUTEVENT_COMPASS,
 			INPUTEVENT_LOCATION,
 			INPUTEVENT_TOUCH,
+            INPUTEVENT_KEYBOARD,
 		};
 
 		// all
@@ -120,6 +121,9 @@
 		float  	m_hAccuracy;
 		float  	m_vAccuracy;
 		float  	m_speed;
+
+        // keyboard
+        int     m_keyId;
 	};
 
 	LockingQueue < InputEvent > * inputQueue = NULL;
@@ -230,6 +234,22 @@
 	}
 
 	//----------------------------------------------------------------//
+	extern "C" JNIEXPORT void JNICALL Java_com_moaisdk_core_Moai_AKUEnqueueKeyboardKeyEvent ( JNIEnv* env, jclass obj, jint deviceId, jint sensorId, jint keyId, jboolean down ) {
+
+		InputEvent ievent;
+
+		ievent.m_type = InputEvent::INPUTEVENT_KEYBOARD;
+
+		ievent.m_deviceId = deviceId;
+		ievent.m_sensorId = sensorId;
+
+		ievent.m_keyId = keyId;
+		ievent.m_down = down;
+
+		inputQueue->Push ( ievent );
+	}
+
+	//----------------------------------------------------------------//
 	extern "C" JNIEXPORT void JNICALL Java_com_moaisdk_core_Moai_AKUFinalize	( JNIEnv* env, jclass obj ) {
 
         AKUModulesAndroidAppFinalize ();
@@ -257,6 +277,9 @@
 			case InputEvent::INPUTEVENT_LOCATION:
 				AKUEnqueueLocationEvent ( ievent.m_deviceId, ievent.m_sensorId, ievent.m_longitude, ievent.m_latitude, ievent.m_altitude, ievent.m_hAccuracy, ievent.m_vAccuracy, ievent.m_speed );
 				break;
+            case InputEvent::INPUTEVENT_KEYBOARD:
+                AKUEnqueueKeyboardKeyEvent ( ievent.m_deviceId, ievent.m_sensorId, ievent.m_keyId, ievent.m_down );
+                break;
 			}
 		}
 
@@ -442,6 +465,14 @@
 
 		JNI_GET_CSTRING ( jname, name );
 		AKUSetInputDeviceTouch ( deviceId, sensorId, name );
+		JNI_RELEASE_CSTRING ( jname, name );
+	}
+
+	//----------------------------------------------------------------//
+	extern "C" JNIEXPORT void JNICALL Java_com_moaisdk_core_Moai_AKUSetInputDeviceKeyboard ( JNIEnv* env, jclass obj, jint deviceId, jint sensorId, jstring jname ) {
+
+		JNI_GET_CSTRING ( jname, name );
+		AKUSetInputDeviceKeyboard ( deviceId, sensorId, name );
 		JNI_RELEASE_CSTRING ( jname, name );
 	}
 
