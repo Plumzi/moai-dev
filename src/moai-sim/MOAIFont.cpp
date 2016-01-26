@@ -289,8 +289,13 @@ int MOAIFont::_setDefaultSize ( lua_State* L ) {
 int MOAIFont::_setFilter ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIFont, "U" )
 	
-	self->mMinFilter = state.GetValue < int >( 2, ZGL_SAMPLE_LINEAR );
-	self->mMagFilter = state.GetValue < int >( 3, self->mMinFilter );
+	int min = state.GetValue < int >( 2, ZGL_SAMPLE_LINEAR );
+	int mag = state.GetValue < int >( 3, min );
+	
+	MOAISingleTexture::CheckFilterModes ( min, mag );
+	
+	self->mMinFilter = min;
+	self->mMagFilter = mag;
 
 	return 0;
 }
@@ -559,8 +564,10 @@ MOAISingleTexture* MOAIFont::GetGlyphTexture ( MOAIGlyph& glyph ) {
 //----------------------------------------------------------------//
 void MOAIFont::Init ( cc8* filename ) {
 
-	if ( ZLFileSys::CheckFileExists ( filename )) {
-		this->mFilename = ZLFileSys::GetAbsoluteFilePath ( filename );
+	this->mFilename = ZLFileSys::GetAbsoluteFilePath ( filename );
+
+	if ( !ZLFileSys::CheckFileExists ( filename )) {
+		ZLLog_Warning ( "WARNING: font file %s does not exist\n", filename );
 	}
 }
 
@@ -609,6 +616,9 @@ MOAIFont::~MOAIFont () {
 // update them to match target - i.e. metrics or metrics and bitmap
 void MOAIFont::ProcessGlyphs () {
 
+	// this function gets called frequenty to process any pending glyphs on the fly.
+	// for that reason, it should exit quickly if there are no pending glyphs.
+
 	MOAIFontReader* fontReader = this->mReader;
 	if ( !fontReader ) return;
 
@@ -629,11 +639,15 @@ void MOAIFont::ProcessGlyphs () {
 		// if no pending glyphs, move on to the next deck
 		if ( !pendingGlyphs ) continue;
 		
+		// only open the font here as we know that we have pending glyphs to process
 		if ( !fontIsOpen ) {
 			fontIsOpen = this->mReader->OpenFontFile ( this->mFilename ) == MOAIFontReader::OK;
 		}
 
-		if ( !fontIsOpen ) return;		
+		if ( !fontIsOpen ) {
+			ZLLog_Error ( "ERROR: unable to open font file %s for reading glyphs.\n", this->mFilename.c_str ());
+			return;
+		}
 		
 		// get the face metrics
 		fontReader->SelectFace ( glyphSet.mSize );

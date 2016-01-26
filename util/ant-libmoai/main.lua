@@ -73,7 +73,7 @@ FOLDERS = {
 }
 
 JAVA = {
-	NAMESPACE			= 'com.ziplinegames.moai',
+	NAMESPACE			= 'com.moaisdk',
 	PLATFORM			= 'Android',
 }
 
