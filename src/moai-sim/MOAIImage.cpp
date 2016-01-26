@@ -1144,7 +1144,7 @@ int MOAIImage::_write ( lua_State* L ) {
 int MOAIImage::_getData(lua_State *L) {
 	MOAI_LUA_SETUP ( MOAIImage, "U" )
 
-	lua_pushlstring ( state, (const char*)self->mBitmap, self->GetBitmapSize() );
+	lua_pushlstring ( state, (const char*)self->mBitmap.GetBuffer (), self->GetBitmapSize() );
 	return 1;
 }
 
@@ -3040,11 +3040,11 @@ void MOAIImage::CleanupAlpha ( const MOAIImage& image ) {
 	
 	if ( this->mPixelFormat == TRUECOLOR ) {
 		for ( u32 y = 0; y < this->mHeight; ++y ) {
-			ZLColor::CleanupAlpha ( this->GetRowAddr ( y ), this->mColorFormat, this->mWidth );
+			ZLColor::CleanupAlpha ( this->GetRowAddrMutable ( y ), this->mColorFormat, this->mWidth );
 		}
 	}
 	else {
-		ZLColor::CleanupAlpha ( this->mPalette, this->mColorFormat, this->GetPaletteCount ());
+		ZLColor::CleanupAlpha ( this->mPalette.Invalidate (), this->mColorFormat, this->GetPaletteCount ());
 	}
 }
 
