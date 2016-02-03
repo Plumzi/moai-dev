@@ -189,7 +189,7 @@ bool MOAIGfxBuffer::OnGPUCreate () {
 			ZLGfxHandle* vbo = gfx.CreateBuffer ();
 			if ( vbo ) {
 			
-				ZLSharedConstBuffer* buffer = this->GetCursor () ? this->GetBuffer () : 0;
+				ZLSharedConstBuffer* buffer = this->GetCursor () ? this->GetSharedConstBuffer () : 0;
 				
 				if ( this->mCopyOnUpdate ) {
 					buffer = gfx.CopyBuffer ( buffer );
@@ -262,6 +262,7 @@ bool MOAIGfxBuffer::OnGPUUpdate () {
 		
 		gfx.BindBuffer ( this->mTarget, vbo );
 		gfx.BufferSubData ( this->mTarget, 0, this->GetCursor (), buffer, 0 );
+		gfx.BindBuffer ( this->mTarget, 0 );
 	
 		//u32 hint = this->mVBOs.Size () > 1 ? ZGL_BUFFER_USAGE_DYNAMIC_DRAW : ZGL_BUFFER_USAGE_STATIC_DRAW;
 		//zglBufferData ( this->mTarget, this->GetLength (), 0, hint );
@@ -312,14 +313,16 @@ void MOAIGfxBuffer::Reserve ( u32 size ) {
 //----------------------------------------------------------------//
 void MOAIGfxBuffer::ReserveVBOs ( u32 gpuBuffers ) {
 
+	if ( gpuBuffers < this->mVBOs.Size ()) {
+		this->mVBOs.Clear ();
+	}
+
 	if ( gpuBuffers ) {
 		this->mVBOs.Resize ( gpuBuffers, 0 );
 		this->mCurrentVBO = gpuBuffers - 1;
 	}
-	else {
-		this->mVBOs.Clear ();
-		this->mCurrentVBO = 0;
-	}
+
+	this->FinishInit ();
 }
 
 //----------------------------------------------------------------//
